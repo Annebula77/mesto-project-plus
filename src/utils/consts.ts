@@ -11,3 +11,4 @@ export const CARD_NOT_FOUND_MESSAGE = 'Карточкa не найденa';
 export const CARDS_NOT_FOUND_MESSAGE = 'Карточки не найдены';
 export const INVALID_DATA_MESSAGE = 'Данные недействительны';
 export const VALIDATION_ERROR_MESSAGE = 'Ошибка валидации полей';
+export const CARD_DELITION_SUCCESS_MESSAGE = 'Карточка успешно удалена';

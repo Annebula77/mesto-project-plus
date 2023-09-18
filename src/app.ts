@@ -3,11 +3,11 @@ import mongoose from 'mongoose';
 import path from "path";
 import "dotenv/config";
 import router from "./routes";
-import user from "models/user";
+import { SERVER_ERROR_MESSAGE, STATUS_SERVER_ERROR } from "./utils/consts";
 
 
 const app = express();
-const { PORT = 3000 } = process.env;
+const { PORT } = process.env;
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
@@ -21,6 +21,17 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 app.use(router);
+
+app.use((error: any, req: Request, res: Response, next: NextFunction) => {
+  // Логирование ошибки
+  console.error(error.message);
+
+  // Отправка ответа пользователю
+  res.status(error.statusCode || SERVER_ERROR_MESSAGE).json({
+    status: 'error',
+    message: error.message || STATUS_SERVER_ERROR
+  });
+});
 
 const connect = async () => {
   mongoose.set("strictQuery", true);
