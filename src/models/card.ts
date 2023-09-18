@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { ICard } from "../utils/types";
 import validator from "validator";
-import { nameValidator } from "../utils/validation";
+
 
 
 const CardSchema = new mongoose.Schema<ICard>({
@@ -10,7 +10,7 @@ const CardSchema = new mongoose.Schema<ICard>({
     required: true,
     minlength: 2,
     maxlength: 30,
-    validate: nameValidator
+    match: /^[a-zA-Z0-9.,!? ]*$/
   },
 
   link: {

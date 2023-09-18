@@ -13,3 +13,11 @@ export interface ICard {
   likes: ObjectId[];
   createdAt: Date;
 }
+
+export type UserData = { name: string, about: string } | { avatar: string };
+
+export interface UpdateUserData {
+  name?: string;
+  about?: string;
+  avatar?: string;
+}

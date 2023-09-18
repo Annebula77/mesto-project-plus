@@ -35,10 +35,6 @@ export const createCard = async (req: Request, res: Response, next: NextFunction
   try {
     const { name, link } = req.body;
     const owner = req.user?._id;
-    if (!owner) {
-      return res.status(STATUS_BAD_REQUEST).send({ message: 'INVALID_DATA_MESSAGE' });
-    }
-
     const newCard = await Card.create({ name, link, owner });
     return res.status(STATUS_CREATED).send(newCard);
   }
@@ -68,7 +64,7 @@ export const deleteCard = async (req: Request, res: Response, next: NextFunction
       return res.status(STATUS_BAD_REQUEST).send({ message: INVALID_DATA_MESSAGE });
     }
 
-    await Card.findByIdAndDelete(card);
+    await Card.deleteOne({ id: card._id });
 
     return res.status(STATUS_SUCCESS).send({ message: CARD_DELITION_SUCCESS_MESSAGE });
   }
