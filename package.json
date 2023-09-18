@@ -26,7 +26,9 @@
     "typescript": "^4.7.4"
   },
   "dependencies": {
-    "express": "^4.18.1",
-    "mongoose": "^6.5.0"
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "mongoose": "^6.12.0",
+    "validator": "^13.11.0"
   }
 }
