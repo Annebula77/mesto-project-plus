@@ -4,25 +4,20 @@ import User from "../models/user";
 import {
   STATUS_SUCCESS,
   STATUS_CREATED,
-  STATUS_SERVER_ERROR,
   STATUS_NOT_FOUND,
   STATUS_BAD_REQUEST,
-  USERS_NOT_FOUND_MESSAGE,
   USER_NOT_FOUND_MESSAGE,
   INVALID_DATA_MESSAGE,
   VALIDATION_ERROR_MESSAGE
 } from "../utils/consts";
 import { NotFoundError } from "../errors/notfoundError";
+import { userUpdateDecorator } from "../decorators/userDecorator";
 
 
 
 export const getUsers = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const users = await User.find({});
-    if (!users.length) {
-      res.status(STATUS_SERVER_ERROR).send({ message: USERS_NOT_FOUND_MESSAGE })
-      return;
-    }
     res.status(STATUS_SUCCESS).send(users)
   }
   catch (error) {
@@ -64,51 +59,16 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
 }
 
 
-export const updateUserInfo = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const { name, about } = req.body;
-    const { id } = req.params;
+export const updateUserInfo = userUpdateDecorator((req: Request) => {
+  const { name, about } = req.body;
+  return { name, about };
+});
 
-    const updatedUser = await User.findByIdAndUpdate(id, { name, about }, { new: true, runValidators: true });
+export const updateUserAvatar = userUpdateDecorator((req: Request) => {
+  const { avatar } = req.body;
+  return { avatar };
+});
 
-    if (!updatedUser) {
-      throw new NotFoundError(USER_NOT_FOUND_MESSAGE);
-    }
-
-    res.status(STATUS_SUCCESS).send(updatedUser);
-  }
-  catch (error) {
-    if (error instanceof mongoose.Error.ValidationError) {
-      return res
-        .status(STATUS_BAD_REQUEST)
-        .send({ ...error, message: VALIDATION_ERROR_MESSAGE });
-    }
-    next(error);
-  }
-}
-
-export const updateUserAvatar = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const { avatar } = req.body;
-    const { id } = req.params;
-
-    const updatedUser = await User.findByIdAndUpdate(id, { avatar }, { new: true, runValidators: true });
-
-    if (!updatedUser) {
-      throw new NotFoundError(USER_NOT_FOUND_MESSAGE);
-    }
-
-    res.status(STATUS_SUCCESS).send(updatedUser);
-  }
-  catch (error) {
-    if (error instanceof mongoose.Error.ValidationError) {
-      return res
-        .status(STATUS_BAD_REQUEST)
-        .send({ ...error, message: VALIDATION_ERROR_MESSAGE });
-    }
-    next(error);
-  }
-}
 
 
 

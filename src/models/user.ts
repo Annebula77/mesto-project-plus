@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { IUser } from "../utils/types";
 import validator from "validator";
-import { nameValidator, aboutValidator } from "../utils/validation";
+
 
 const UserSchema = new mongoose.Schema<IUser>({
   name: {
@@ -9,7 +9,7 @@ const UserSchema = new mongoose.Schema<IUser>({
     required: true,
     minlength: 2,
     maxlength: 30,
-    validate: nameValidator
+    match: /^[a-zA-Z0-9.,!? ]*$/
   },
 
   about: {
@@ -17,7 +17,7 @@ const UserSchema = new mongoose.Schema<IUser>({
     required: true,
     minlength: 2,
     maxlength: 200,
-    validate: aboutValidator
+    match: /^[a-zA-Z0-9.,!? ]*$/
   },
   avatar: {
     type: String,
