@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { ICard } from "utils/types";
+import { ICard } from "../utils/types";
 
 const CardSchema = new mongoose.Schema<ICard>({
   name: {
