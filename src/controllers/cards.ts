@@ -1,35 +1,27 @@
-import { NextFunction, Request, Response } from "express";
-import mongoose from "mongoose";
+import { NextFunction, Request, Response } from 'express';
+import mongoose from 'mongoose';
 import Card from '../models/card';
 import {
   STATUS_SUCCESS,
   STATUS_CREATED,
-  STATUS_SERVER_ERROR,
   STATUS_NOT_FOUND,
   STATUS_BAD_REQUEST,
   CARD_NOT_FOUND_MESSAGE,
-  CARDS_NOT_FOUND_MESSAGE,
   INVALID_DATA_MESSAGE,
   VALIDATION_ERROR_MESSAGE,
-  CARD_DELITION_SUCCESS_MESSAGE
-} from "../utils/consts";
-import { NotFoundError } from "../errors/notfoundError";
-
+  CARD_DELITION_SUCCESS_MESSAGE,
+} from '../utils/consts';
+import modifyCardLikes from '../decorators/cardDecorator';
 
 export const getCards = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const cards = await Card.find({})
-      .populate(['owner', 'likes'])
-    if (!cards.length) {
-      res.status(STATUS_SERVER_ERROR).send({ message: CARDS_NOT_FOUND_MESSAGE })
-      return;
-    }
-    res.status(STATUS_SUCCESS).send(cards)
+      .populate(['owner', 'likes']);
+    return res.status(STATUS_SUCCESS).send(cards);
+  } catch (error) {
+    return next(error);
   }
-  catch (error) {
-    next(error);
-  }
-}
+};
 
 export const createCard = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -37,16 +29,15 @@ export const createCard = async (req: Request, res: Response, next: NextFunction
     const owner = req.user?._id;
     const newCard = await Card.create({ name, link, owner });
     return res.status(STATUS_CREATED).send(newCard);
-  }
-  catch (error) {
+  } catch (error) {
     if (error instanceof mongoose.Error.ValidationError) {
       return res
         .status(STATUS_BAD_REQUEST)
         .send({ ...error, message: VALIDATION_ERROR_MESSAGE });
     }
-    next(error);
+    return next(error);
   }
-}
+};
 
 export const deleteCard = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -67,55 +58,10 @@ export const deleteCard = async (req: Request, res: Response, next: NextFunction
     await Card.deleteOne({ id: card._id });
 
     return res.status(STATUS_SUCCESS).send({ message: CARD_DELITION_SUCCESS_MESSAGE });
+  } catch (error) {
+    return next(error);
   }
-  catch (error) {
-    next(error);
-  }
-}
+};
 
-export const likeCard = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const { id } = req.params;
-    const userId = req.user?._id;
-
-    const updatedCard = await Card.findByIdAndUpdate(
-      id,
-      { $addToSet: { likes: userId } },
-      { new: true })
-      .populate(['owner', 'likes']);
-
-    if (!updatedCard) {
-      throw new NotFoundError(CARD_NOT_FOUND_MESSAGE);
-    }
-
-    res.status(STATUS_SUCCESS).send(updatedCard);
-  }
-  catch (error) {
-    next(error);
-  }
-}
-
-export const dislikeCard = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const { id } = req.params;
-    const userId = req.user?._id;
-
-    const updatedCard = await Card.findByIdAndUpdate(
-      id,
-      { $pull: { likes: userId } },
-      { new: true })
-      .populate(['owner', 'likes']);
-
-    if (!updatedCard) {
-      throw new NotFoundError(CARD_NOT_FOUND_MESSAGE);
-    }
-
-    res.status(STATUS_SUCCESS).send(updatedCard);
-  }
-  catch (error) {
-    next(error);
-  }
-}
-
-
-
+export const likeCard = modifyCardLikes('$addToSet');
+export const dislikeCard = modifyCardLikes('$pull');
