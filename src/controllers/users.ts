@@ -1,5 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
+import 'dotenv/config';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 import User from '../models/user';
 import {
   STATUS_SUCCESS,
@@ -9,9 +12,13 @@ import {
   USER_NOT_FOUND_MESSAGE,
   INVALID_DATA_MESSAGE,
   VALIDATION_ERROR_MESSAGE,
+  WRONG_EMAIL_PASSWORD_MESSAGE,
 } from '../utils/consts';
 import NotFoundError from '../errors/notfoundError';
 import userUpdateDecorator from '../decorators/userDecorator';
+import UnauthorizedError from '../errors/unauthorizedError';
+
+export const jwtSecret = process.env.JWT_SECRET as string;
 
 export const getUsers = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -40,8 +47,16 @@ export const getUserById = async (req: Request, res: Response, next: NextFunctio
 
 export const createUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { name, about, avatar } = req.body;
-    const newUser = await User.create({ name, about, avatar });
+    const {
+      name, about, avatar, email, password,
+    } = req.body;
+
+    const hash = await bcrypt.hash(password, 10);
+
+    const newUser = await User.create({
+      name, about, avatar, email, password: hash,
+    });
+
     return res.status(STATUS_CREATED).send(newUser);
   } catch (error) {
     if (error instanceof mongoose.Error.ValidationError) {
@@ -62,3 +77,29 @@ export const updateUserAvatar = userUpdateDecorator((req: Request) => {
   const { avatar } = req.body;
   return { avatar };
 });
+
+export const login = async (req: Request, res: Response, next: NextFunction) => {
+  const { email, password } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    if (!user || !user.password) {
+      throw new UnauthorizedError(WRONG_EMAIL_PASSWORD_MESSAGE);
+    }
+
+    const matched = await bcrypt.compare(password, user.password);
+
+    if (!matched) {
+      throw new UnauthorizedError(WRONG_EMAIL_PASSWORD_MESSAGE);
+    }
+    const token = jwt.sign({ _id: user._id }, jwtSecret, { expiresIn: '7d' });
+    res.cookie('jwt', token, {
+      httpOnly: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      secure: true, // если используется HTTPS
+      sameSite: 'strict',
+    });
+    res.send({ token });
+  } catch (err) {
+    next(err);
+  }
+};
