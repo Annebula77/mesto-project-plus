@@ -1,8 +1,8 @@
 class NotFoundError extends Error {
   constructor(message?: string) {
-    super(message); // передаем сообщение в базовый класс
-    this.name = 'NotFoundError'; // задаем имя ошибки
-    // eslint-disable-next-line no-console
+    super(message);
+    this.name = 'NotFoundError';
+
     // правильно устанавливаем прототип (необходимо для `instanceof` в TypeScript)
     Object.setPrototypeOf(this, NotFoundError.prototype);
   }

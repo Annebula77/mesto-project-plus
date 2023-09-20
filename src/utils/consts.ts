@@ -2,6 +2,7 @@ export const STATUS_SUCCESS = 200;
 export const STATUS_CREATED = 201;
 export const STATUS_BAD_REQUEST = 400;
 export const STATUS_NOT_FOUND = 404;
+export const STATUS_UNAUTHORIZED = 401;
 export const STATUS_SERVER_ERROR = 500;
 
 export const SERVER_ERROR_MESSAGE = 'Произошла ошибка на сервере';
@@ -12,3 +13,10 @@ export const CARDS_NOT_FOUND_MESSAGE = 'Карточки не найдены';
 export const INVALID_DATA_MESSAGE = 'Данные недействительны';
 export const VALIDATION_ERROR_MESSAGE = 'Ошибка валидации полей';
 export const CARD_DELITION_SUCCESS_MESSAGE = 'Карточка успешно удалена';
+export const WRONG_EMAIL_PASSWORD_MESSAGE = 'Вы ввели неправильные почту или пароль';
+export const SUCCESS_MESSAGE = 'Это успех!';
+export const AUTHORIZATION_NEEDED_MESSAGE = 'Необходима авторизация';
+
+export const DEFAULT_USER_NAME = 'Жак-Ив Кусто';
+export const DEFAULT_ABOUT_VALUE = 'Исследователь';
+export const DEFAULT_AVATAR_LINK = 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png';
