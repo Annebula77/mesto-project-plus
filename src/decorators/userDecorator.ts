@@ -23,8 +23,8 @@ const userUpdateDecorator = (dataExtractor: (req: Request) => UserData) => async
 ) => {
   try {
     const data = dataExtractor(req);
-    const { id } = req.params;
-    const updatedUser = await updateUser(id, data);
+    const userId = (req.user as { _id: string | ObjectId })._id;
+    const updatedUser = await updateUser(userId, data);
     return res.status(STATUS_SUCCESS).send(updatedUser);
   } catch (error) {
     if (error instanceof mongoose.Error.ValidationError) {

@@ -42,9 +42,9 @@ export const createCard = async (req: Request, res: Response, next: NextFunction
 
 export const deleteCard = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { id } = req.params;
+    const { cardId } = req.params;
 
-    const card = await Card.findById(id);
+    const card = await Card.findById(cardId);
 
     if (!card) {
       return res.status(STATUS_NOT_FOUND).send({ message: CARD_NOT_FOUND_MESSAGE });

@@ -8,9 +8,8 @@ import { SERVER_ERROR_MESSAGE, STATUS_SERVER_ERROR } from './utils/consts';
 const app = express();
 const { PORT } = process.env;
 
-app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
-
+app.use(express.json());
 app.use(router);
 
 app.use((error: any, req: Request, res: Response, next: NextFunction) => {
