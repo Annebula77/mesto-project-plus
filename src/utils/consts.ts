@@ -2,6 +2,7 @@ export const STATUS_SUCCESS = 200;
 export const STATUS_CREATED = 201;
 export const STATUS_BAD_REQUEST = 400;
 export const STATUS_NOT_FOUND = 404;
+export const STATUS_FORBIDDEN = 403;
 export const STATUS_UNAUTHORIZED = 401;
 export const STATUS_SERVER_ERROR = 500;
 
@@ -16,6 +17,7 @@ export const CARD_DELITION_SUCCESS_MESSAGE = 'Карточка успешно у
 export const WRONG_EMAIL_PASSWORD_MESSAGE = 'Вы ввели неправильные почту или пароль';
 export const SUCCESS_MESSAGE = 'Это успех!';
 export const AUTHORIZATION_NEEDED_MESSAGE = 'Необходима авторизация';
+export const STATUS_FORBIDDEN_MESSAGE = 'У вас нет прав на эту операцию';
 
 export const DEFAULT_USER_NAME = 'Жак-Ив Кусто';
 export const DEFAULT_ABOUT_VALUE = 'Исследователь';

@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import mongoose from 'mongoose';
+import mongoose, { ObjectId } from 'mongoose';
 import 'dotenv/config';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
@@ -7,16 +7,13 @@ import User from '../models/user';
 import {
   STATUS_SUCCESS,
   STATUS_CREATED,
-  STATUS_NOT_FOUND,
   STATUS_BAD_REQUEST,
-  USER_NOT_FOUND_MESSAGE,
-  INVALID_DATA_MESSAGE,
   VALIDATION_ERROR_MESSAGE,
   WRONG_EMAIL_PASSWORD_MESSAGE,
 } from '../utils/consts';
-import NotFoundError from '../errors/notfoundError';
 import userUpdateDecorator from '../decorators/userDecorator';
 import UnauthorizedError from '../errors/unauthorizedError';
+import UserReturnDecorator from '../decorators/userReturnDecorator';
 
 export const jwtSecret = process.env.JWT_SECRET as string;
 
@@ -29,21 +26,15 @@ export const getUsers = async (req: Request, res: Response, next: NextFunction) 
   }
 };
 
-export const getUserById = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const { id } = req.params;
-    const user = await User.findById(id).orFail(() => new NotFoundError(USER_NOT_FOUND_MESSAGE));
-    return res.status(STATUS_SUCCESS).send(user);
-  } catch (error) {
-    if (error instanceof Error && error.name === 'NotFoundError') {
-      return res.status(STATUS_NOT_FOUND).send({ message: STATUS_NOT_FOUND });
-    }
-    if (error instanceof mongoose.Error.CastError) {
-      return res.status(STATUS_BAD_REQUEST).send({ message: INVALID_DATA_MESSAGE });
-    }
-    return next(error);
-  }
-};
+export const getUserById = UserReturnDecorator(async (req: Request) => {
+  const { id } = req.params;
+  return User.findById(id);
+});
+
+export const getAuthUser = UserReturnDecorator(async (req: Request) => {
+  const userId = (req.user as { _id: string | ObjectId })._id;
+  return User.findById(userId);
+});
 
 export const createUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -81,7 +72,7 @@ export const updateUserAvatar = userUpdateDecorator((req: Request) => {
 export const login = async (req: Request, res: Response, next: NextFunction) => {
   const { email, password } = req.body;
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).select('+password');
     if (!user || !user.password) {
       throw new UnauthorizedError(WRONG_EMAIL_PASSWORD_MESSAGE);
     }

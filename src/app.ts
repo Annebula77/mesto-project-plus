@@ -11,14 +11,6 @@ const { PORT } = process.env;
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use((req: Request, res: Response, next: NextFunction) => {
-  req.user = {
-    _id: '650847432cf9d626a80b80a4',
-  };
-
-  next();
-});
-
 app.use(router);
 
 app.use((error: any, req: Request, res: Response, next: NextFunction) => {
