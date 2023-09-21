@@ -1,4 +1,5 @@
 import { ObjectId } from 'mongoose';
+import { JwtPayload } from 'jsonwebtoken';
 
 export interface IUser {
   name: string;
@@ -23,3 +24,5 @@ export interface UpdateUserData {
   about?: string;
   avatar?: string;
 }
+
+export type UserReturnType = string | JwtPayload | { _id: string | ObjectId } | null;
