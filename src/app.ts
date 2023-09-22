@@ -1,28 +1,39 @@
 import express, { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
 import path from 'path';
+import expressWinston from 'express-winston';
+import logger from './utils/logger';
 import 'dotenv/config';
 import router from './routes';
 import { SERVER_ERROR_MESSAGE, STATUS_SERVER_ERROR } from './utils/consts';
+import { ExtendedError } from './utils/types';
 
 const app = express();
 const { PORT } = process.env;
 
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(expressWinston.logger({
+  winstonInstance: logger,
+  meta: true,
+  msg: 'HTTP {{req.method}} {{req.url}}',
+  expressFormat: true,
+}));
 app.use(express.json());
 app.use(router);
+app.use(expressWinston.errorLogger({
+  winstonInstance: logger,
+}));
 
-app.use((error: any, req: Request, res: Response, next: NextFunction) => {
-  // Логирование ошибки(временное решение)
-  // eslint-disable-next-line no-console
-  console.error(error.message);
-
+// eslint-disable-next-line no-unused-vars
+app.use((error: ExtendedError, req: Request, res: Response, next: NextFunction) => {
+  if (process.env.NODE_ENV !== 'production') {
+    logger.error(error.message, { stack: error.stack, ...req });
+  }
   // Отправка ответа пользователю
-  res.status(error.statusCode || SERVER_ERROR_MESSAGE).json({
+  res.status(error.statusCode || STATUS_SERVER_ERROR).json({
     status: 'error',
-    message: error.message || STATUS_SERVER_ERROR,
+    message: error.message || SERVER_ERROR_MESSAGE,
   });
-  next();
 });
 
 const connect = async () => {

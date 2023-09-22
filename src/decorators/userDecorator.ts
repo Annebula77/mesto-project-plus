@@ -4,9 +4,9 @@ import { UserData, UpdateUserData } from '../utils/types';
 import User from '../models/user';
 import {
   STATUS_SUCCESS,
-  STATUS_BAD_REQUEST,
   VALIDATION_ERROR_MESSAGE,
 } from '../utils/consts';
+import ValidationError from '../errors/validationError';
 
 const updateUser = async (
   id: string | ObjectId,
@@ -28,9 +28,8 @@ const userUpdateDecorator = (dataExtractor: (req: Request) => UserData) => async
     return res.status(STATUS_SUCCESS).send(updatedUser);
   } catch (error) {
     if (error instanceof mongoose.Error.ValidationError) {
-      return res
-        .status(STATUS_BAD_REQUEST)
-        .send({ ...error, message: VALIDATION_ERROR_MESSAGE });
+      const validationError = new ValidationError(VALIDATION_ERROR_MESSAGE, error);
+      return next(validationError);
     }
     return next(error);
   }

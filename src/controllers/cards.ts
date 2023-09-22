@@ -4,15 +4,15 @@ import Card from '../models/card';
 import {
   STATUS_SUCCESS,
   STATUS_CREATED,
-  STATUS_NOT_FOUND,
-  STATUS_BAD_REQUEST,
   CARD_NOT_FOUND_MESSAGE,
   VALIDATION_ERROR_MESSAGE,
   CARD_DELITION_SUCCESS_MESSAGE,
-  STATUS_FORBIDDEN,
   STATUS_FORBIDDEN_MESSAGE,
 } from '../utils/consts';
 import modifyCardLikes from '../decorators/cardDecorator';
+import NotFoundError from '../errors/notfoundError';
+import ForbiddenError from '../errors/forbiddenError';
+import ValidationError from '../errors/validationError';
 
 export const getCards = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -32,9 +32,8 @@ export const createCard = async (req: Request, res: Response, next: NextFunction
     return res.status(STATUS_CREATED).send(newCard);
   } catch (error) {
     if (error instanceof mongoose.Error.ValidationError) {
-      return res
-        .status(STATUS_BAD_REQUEST)
-        .send({ ...error, message: VALIDATION_ERROR_MESSAGE });
+      const validationError = new ValidationError(VALIDATION_ERROR_MESSAGE, error);
+      return next(validationError);
     }
     return next(error);
   }
@@ -47,13 +46,13 @@ export const deleteCard = async (req: Request, res: Response, next: NextFunction
     const card = await Card.findById(cardId);
 
     if (!card) {
-      return res.status(STATUS_NOT_FOUND).send({ message: CARD_NOT_FOUND_MESSAGE });
+      throw new NotFoundError(CARD_NOT_FOUND_MESSAGE);
     }
 
     const userId = (req.user as { _id: string | ObjectId })._id;
 
     if (card.owner.toString() !== userId) {
-      return res.status(STATUS_FORBIDDEN).send({ message: STATUS_FORBIDDEN_MESSAGE });
+      throw new ForbiddenError(STATUS_FORBIDDEN_MESSAGE);
     }
 
     await Card.deleteOne({ _id: card._id });

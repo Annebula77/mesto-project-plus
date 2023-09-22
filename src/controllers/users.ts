@@ -7,13 +7,13 @@ import User from '../models/user';
 import {
   STATUS_SUCCESS,
   STATUS_CREATED,
-  STATUS_BAD_REQUEST,
   VALIDATION_ERROR_MESSAGE,
   WRONG_EMAIL_PASSWORD_MESSAGE,
 } from '../utils/consts';
 import userUpdateDecorator from '../decorators/userDecorator';
 import UnauthorizedError from '../errors/unauthorizedError';
 import UserReturnDecorator from '../decorators/userReturnDecorator';
+import ValidationError from '../errors/validationError';
 
 export const jwtSecret = process.env.JWT_SECRET as string;
 
@@ -51,9 +51,8 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
     return res.status(STATUS_CREATED).send(newUser);
   } catch (error) {
     if (error instanceof mongoose.Error.ValidationError) {
-      return res
-        .status(STATUS_BAD_REQUEST)
-        .send({ ...error, message: VALIDATION_ERROR_MESSAGE });
+      const validationError = new ValidationError(VALIDATION_ERROR_MESSAGE, error);
+      return next(validationError);
     }
     return next(error);
   }

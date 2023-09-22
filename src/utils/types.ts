@@ -26,3 +26,7 @@ export interface UpdateUserData {
 }
 
 export type UserReturnType = string | JwtPayload | { _id: string | ObjectId } | null;
+
+export interface ExtendedError extends Error {
+  statusCode?: number;
+}
