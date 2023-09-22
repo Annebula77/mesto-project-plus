@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
+import { ObjectId } from 'mongoose';
 import Card from '../models/card';
 import NotFoundError from '../errors/notfoundError';
 import {
@@ -9,7 +10,7 @@ import {
 const modifyCardLikes = (operation: '$addToSet' | '$pull') => async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
-    const userId = req.user?._id;
+    const userId = (req.user as { _id: string | ObjectId })._id;
 
     const updatedCard = await Card.findByIdAndUpdate(
       id,

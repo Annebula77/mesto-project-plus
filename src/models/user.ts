@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import validator from 'validator';
+import { emailValidationOptions, urlValidationOptions } from '../utils/validators';
 import { IUser } from '../utils/types';
 import { DEFAULT_ABOUT_VALUE, DEFAULT_AVATAR_LINK, DEFAULT_USER_NAME } from '../utils/consts';
 
@@ -20,18 +20,14 @@ const UserSchema = new mongoose.Schema<IUser>(
     },
     avatar: {
       type: String,
-      validate: {
-        validator: (v: string) => validator.isURL(v),
-      },
+      validate: urlValidationOptions,
       default: DEFAULT_AVATAR_LINK,
     },
     email: {
       type: String,
       required: true,
       unique: true,
-      validate: {
-        validator: (v: string) => validator.isEmail(v),
-      },
+      validate: emailValidationOptions,
     },
     password: {
       type: String,

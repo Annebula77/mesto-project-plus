@@ -4,7 +4,6 @@ import NotFoundError from '../errors/notfoundError';
 import { UserReturnType } from '../utils/types';
 import {
   STATUS_SUCCESS,
-  STATUS_NOT_FOUND,
   STATUS_BAD_REQUEST,
   USER_NOT_FOUND_MESSAGE,
   INVALID_DATA_MESSAGE,
@@ -19,9 +18,6 @@ const UserReturnDecorator = (
     if (!user) throw new NotFoundError(USER_NOT_FOUND_MESSAGE);
     return res.status(STATUS_SUCCESS).send(user);
   } catch (error) {
-    if (error instanceof Error && error.name === 'NotFoundError') {
-      return res.status(STATUS_NOT_FOUND).send({ message: USER_NOT_FOUND_MESSAGE });
-    }
     if (error instanceof mongoose.Error.CastError) {
       return res.status(STATUS_BAD_REQUEST).send({ message: INVALID_DATA_MESSAGE });
     }

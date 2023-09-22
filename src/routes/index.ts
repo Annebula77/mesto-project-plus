@@ -7,6 +7,7 @@ import authRouter from './authRoute';
 const router = Router();
 router.use('/users', userRouter);
 router.use('/cards', cardsRouter);
+
 router.use(authRouter);
 
 router.use((_req: Request, res: Response) => {

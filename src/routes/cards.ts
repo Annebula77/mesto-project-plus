@@ -3,13 +3,14 @@ import {
   getCards, createCard, deleteCard, likeCard, dislikeCard,
 } from '../controllers/cards';
 import AuthorizedUser from '../middlewares/auth';
+import { cardIdValidator, createCardValidator } from '../utils/validators';
 
 const cardsRouter = Router();
 
 cardsRouter.get('/', AuthorizedUser, getCards);
-cardsRouter.post('/', AuthorizedUser, createCard);
-cardsRouter.delete('/:cardId', AuthorizedUser, deleteCard);
-cardsRouter.put('/:cardId/likes', AuthorizedUser, likeCard);
-cardsRouter.delete('/:cardId/likes', AuthorizedUser, dislikeCard);
+cardsRouter.post('/', AuthorizedUser, createCardValidator, createCard);
+cardsRouter.delete('/:cardId', AuthorizedUser, cardIdValidator, deleteCard);
+cardsRouter.put('/:cardId/likes', cardIdValidator, likeCard);
+cardsRouter.delete('/:cardId/likes', cardIdValidator, dislikeCard);
 
 export default cardsRouter;
