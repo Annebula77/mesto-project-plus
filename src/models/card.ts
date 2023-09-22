@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import validator from 'validator';
+import { urlValidationOptions } from '../utils/validators';
 import { ICard } from '../utils/types';
 
 const CardSchema = new mongoose.Schema<ICard>(
@@ -14,9 +14,7 @@ const CardSchema = new mongoose.Schema<ICard>(
     link: {
       type: String,
       required: true,
-      validate: {
-        validator: (v: string) => validator.isURL(v),
-      },
+      validate: urlValidationOptions,
     },
 
     owner: {
