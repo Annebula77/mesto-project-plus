@@ -6,7 +6,7 @@ export const STATUS_FORBIDDEN = 403;
 export const STATUS_UNAUTHORIZED = 401;
 export const STATUS_SERVER_ERROR = 500;
 
-export const SERVER_ERROR_MESSAGE = 'Произошла ошибка на сервере';
+export const SERVER_ERROR_MESSAGE = 'На сервере произошла ошибка';
 export const USER_NOT_FOUND_MESSAGE = 'Пользователь не найден';
 export const USERS_NOT_FOUND_MESSAGE = 'Пользователи не найдены';
 export const CARD_NOT_FOUND_MESSAGE = 'Карточкa не найденa';
