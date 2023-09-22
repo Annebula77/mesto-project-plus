@@ -8,9 +8,8 @@ import ErrorHub from './errors/errorHub';
 
 const app = express();
 const { MESTO_MONGOD, PORT } = process.env;
-
-app.use(express.static(path.join(__dirname, 'public')));
 app.use(requestLogger);
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(router);
 app.use(errorLogger);

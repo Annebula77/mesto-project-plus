@@ -23,7 +23,7 @@ const userUpdateDecorator = (dataExtractor: (req: Request) => UserData) => async
 ) => {
   try {
     const data = dataExtractor(req);
-    const userId = (req.user as { _id: string | ObjectId })._id;
+    const userId = await (req.user as { _id: string | ObjectId })._id;
     const updatedUser = await updateUser(userId, data);
     return res.status(STATUS_SUCCESS).send(updatedUser);
   } catch (error) {

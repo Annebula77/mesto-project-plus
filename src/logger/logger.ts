@@ -1,7 +1,7 @@
 import winston from 'winston';
 
-const logger = winston.createLogger({
-  level: 'request',
+const winstonLogger = winston.createLogger({
+  level: 'info',
   format: winston.format.combine(
     winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
     winston.format.errors({ stack: true }),
@@ -11,16 +11,16 @@ const logger = winston.createLogger({
   ),
   defaultMeta: { service: 'mesto-project-plus' },
   transports: [
+    new winston.transports.File({ filename: 'request.log', level: 'info' }),
     new winston.transports.File({ filename: 'error.log', level: 'error' }),
-    new winston.transports.File({ filename: 'request.log' }),
     new winston.transports.Console({
       format: winston.format.combine(
         winston.format.colorize(),
-        winston.format.simple(),
+        winston.format.json(),
       ),
     }),
   ],
 
 });
 
-export default logger;
+export default winstonLogger;
