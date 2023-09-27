@@ -44,6 +44,7 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
       name, about, avatar, email, password,
     } = req.body;
 
+    // можно и без этой проверки, но мне тогда нужно переделать везде выброс ошибок
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       throw new UserExistsError(USER_EXISTS_MESSAGE);
