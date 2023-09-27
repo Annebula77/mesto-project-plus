@@ -9,11 +9,13 @@ import {
   STATUS_CREATED,
   VALIDATION_ERROR_MESSAGE,
   WRONG_EMAIL_PASSWORD_MESSAGE,
+  USER_EXISTS_MESSAGE,
 } from '../utils/consts';
 import userUpdateDecorator from '../decorators/userDecorator';
 import UnauthorizedError from '../errors/unauthorizedError';
 import UserReturnDecorator from '../decorators/userReturnDecorator';
 import ValidationError from '../errors/validationError';
+import UserExistsError from '../errors/userExists';
 
 export const jwtSecret = process.env.JWT_SECRET as string;
 
@@ -41,6 +43,11 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
     const {
       name, about, avatar, email, password,
     } = req.body;
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      throw new UserExistsError(USER_EXISTS_MESSAGE);
+    }
 
     const hash = await bcrypt.hash(password, 10);
 
