@@ -19,3 +19,4 @@ dist
 
 # secret directory
 .env
+.config.js
